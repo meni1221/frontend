@@ -1,0 +1,26 @@
+{
+  "name": "ishru-frontend",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 4310 --strictPort",
+    "build": "tsc && vite build",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "dependencies": {
+    "@mantine/core": "^7.15.3",
+    "@mantine/hooks": "^7.15.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "@tabler/icons-react": "^3.28.1",
+    "socket.io-client": "^4.8.1",
+    "vite": "^6.0.7"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "typescript": "^5.7.3"
+  }
+}

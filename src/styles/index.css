@@ -1,0 +1,684 @@
+@import url("https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --ink: #14151a;
+  --muted: #68707f;
+  --paper: #ffffff;
+  --line: #dfe5ec;
+  --navy: #13224a;
+  --navy-soft: #1b2e63;
+  --green: #35d18b;
+  --green-deep: #16a667;
+  --mint: #eafff5;
+  --sky: #edf5ff;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  font-family: "Heebo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f4f7f6;
+  color: var(--ink);
+  font-feature-settings: "kern";
+}
+
+.appShell {
+  background:
+    linear-gradient(135deg, rgba(53, 209, 139, 0.14), transparent 36%),
+    linear-gradient(315deg, rgba(19, 34, 74, 0.08), transparent 34%),
+    #f7faf9;
+}
+
+.topBar,
+.sideNav {
+  border-color: rgba(20, 21, 26, 0.08);
+  background: rgba(255, 255, 255, 0.84);
+  backdrop-filter: blur(18px);
+}
+
+.sideNav {
+  box-shadow: 12px 0 34px rgba(31, 45, 61, 0.06);
+}
+
+.mainCanvas {
+  min-height: 100vh;
+}
+
+.brandMark {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, #0f766e, #2563eb 58%, #e85d4f);
+  color: white;
+  font-weight: 800;
+  box-shadow: 0 14px 26px rgba(15, 118, 110, 0.24);
+}
+
+.brandLogo {
+  display: block;
+  mix-blend-mode: multiply;
+  object-fit: contain;
+}
+
+.brandLogoButton {
+  display: inline-flex;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 140ms ease, opacity 140ms ease;
+}
+
+.brandLogoButton:hover {
+  opacity: 0.86;
+  transform: translateY(-1px);
+}
+
+.brandLogoButton:focus-visible {
+  outline: 2px solid var(--mantine-color-ishruGreen-5);
+  outline-offset: 4px;
+}
+
+.brandLogo.header {
+  width: 128px;
+  height: 48px;
+  object-position: center right;
+}
+
+.brandLogo.auth {
+  width: min(100%, 240px);
+  height: 94px;
+  object-position: center right;
+}
+
+.brandActionLogo {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.brandLogoSize {
+  display: inline-flex;
+  width: 24px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+}
+
+.brandLogoSize.md {
+  width: 36px;
+  height: 26px;
+}
+
+.brandLogoSize .brandActionLogo {
+  width: 100%;
+  height: 100%;
+}
+
+.brandActionLogo.bit {
+  min-width: 24px;
+  height: 16px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0 5px 1px;
+  border-radius: 5px;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0;
+  background: #12a8ff;
+  text-transform: lowercase;
+}
+
+.brandActionLogo.waze {
+  color: #111827;
+}
+
+.brandActionLogo.waze svg {
+  width: 30px;
+  height: 30px;
+}
+
+.brandActionLogo.waze path:first-child {
+  fill: #8ee8ff;
+  stroke: #111827;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+
+.brandActionLogo.waze circle {
+  fill: #111827;
+}
+
+.brandActionLogo.waze path:last-child {
+  fill: none;
+  stroke: #111827;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.brandActionLogo.calendar {
+  border-radius: 7px;
+}
+
+.brandActionLogo.calendar svg {
+  width: 28px;
+  height: 28px;
+}
+
+.brandActionLogo.calendar rect {
+  fill: #ffffff;
+}
+
+.brandActionLogo.calendar text {
+  fill: #3c4043;
+  font-size: 9px;
+  font-weight: 800;
+  font-family: Arial, sans-serif;
+}
+
+.calendarBlue {
+  fill: #4285f4;
+}
+
+.calendarGreen {
+  fill: #34a853;
+}
+
+.calendarYellow {
+  fill: #fbbc04;
+}
+
+.calendarRed {
+  fill: #ea4335;
+}
+
+.guestActionButton {
+  min-height: 44px;
+}
+
+.authLogoWrap {
+  width: min(100%, 250px);
+  height: 98px;
+  display: grid;
+  align-items: center;
+}
+
+.brandMark.large {
+  width: 52px;
+  height: 52px;
+  font-size: 24px;
+}
+
+.authSurface {
+  background:
+    linear-gradient(135deg, rgba(53, 209, 139, 0.2), transparent 32%),
+    linear-gradient(315deg, rgba(19, 34, 74, 0.12), transparent 30%),
+    linear-gradient(45deg, rgba(53, 209, 139, 0.1), transparent 36%),
+    #f7faf9;
+}
+
+.authCard,
+.studioCard,
+.eventCard,
+.invitationPreview {
+  border-color: rgba(20, 21, 26, 0.08) !important;
+  box-shadow: 0 22px 58px rgba(31, 45, 61, 0.08);
+}
+
+.authCard {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(20px);
+}
+
+.authTitle {
+  letter-spacing: 0;
+  line-height: 1.08;
+}
+
+.eventCard {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.9)),
+    #ffffff;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease;
+}
+
+.activeEventBar {
+  margin-bottom: 16px;
+  background:
+    linear-gradient(135deg, rgba(53, 209, 139, 0.12), rgba(19, 34, 74, 0.04)),
+    rgba(255, 255, 255, 0.9);
+  box-shadow: 0 22px 58px rgba(31, 45, 61, 0.08);
+}
+
+.activeEventInfo {
+  min-width: min(100%, 320px);
+}
+
+.activeEventStats {
+  min-width: min(100%, 320px);
+}
+
+.eventCard::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  width: 5px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--green), var(--green-deep), var(--navy));
+}
+
+.eventCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 28px 70px rgba(31, 45, 61, 0.13);
+}
+
+.eventCard.selected {
+  border-color: rgba(53, 209, 139, 0.46) !important;
+  box-shadow: 0 24px 68px rgba(53, 209, 139, 0.2);
+}
+
+.statCard {
+  min-height: 74px;
+  border: 1px solid rgba(20, 21, 26, 0.08);
+  border-radius: 8px;
+  padding: 10px 8px;
+  background:
+    linear-gradient(180deg, rgba(53, 209, 139, 0.09), transparent),
+    #fbfcff;
+}
+
+.statCard.compact {
+  min-width: 88px;
+  min-height: auto;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.qrBox {
+  width: min(100%, 320px);
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  border: 1px solid rgba(20, 21, 26, 0.08);
+  border-radius: 8px;
+  padding: 18px;
+  background: white;
+}
+
+.invitationPreview {
+  min-height: 420px;
+  background:
+    linear-gradient(135deg, rgba(53, 209, 139, 0.16), rgba(19, 34, 74, 0.06) 52%, rgba(255, 255, 255, 0.4)),
+    #ffffff;
+}
+
+.invitationMessage {
+  white-space: pre-wrap;
+  line-height: 1.8;
+  font-size: 17px;
+}
+
+.guestSurface {
+  width: min(100%, 820px);
+  margin-inline: auto;
+  padding: 12px 0 40px;
+}
+
+.guestInvite {
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(53, 209, 139, 0.18), rgba(19, 34, 74, 0.07) 46%, rgba(255, 255, 255, 0.1)),
+    #ffffff;
+  box-shadow: 0 28px 76px rgba(31, 45, 61, 0.12);
+}
+
+.guestMessage {
+  max-width: 680px;
+  white-space: pre-wrap;
+  line-height: 1.9;
+  font-size: 18px;
+}
+
+.rsvpCard {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(12px);
+}
+
+.rsvpThanksCard {
+  background:
+    linear-gradient(135deg, rgba(53, 209, 139, 0.14), rgba(255, 255, 255, 0.86)),
+    #ffffff;
+}
+
+.seatingGrid {
+  align-items: start;
+}
+
+.seatingFocus {
+  min-height: 420px;
+}
+
+.seatingTable {
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.seatingTable:hover {
+  transform: translateY(-2px);
+}
+
+.seatingTable.selected {
+  border-color: rgba(53, 209, 139, 0.52) !important;
+  box-shadow: 0 18px 42px rgba(53, 209, 139, 0.16);
+}
+
+.seatGuestRow {
+  min-height: 62px;
+  padding: 10px 12px;
+  border: 1px solid rgba(20, 21, 26, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.emptySeatingState {
+  background: rgba(53, 209, 139, 0.08);
+}
+
+.dangerCard {
+  border-color: rgba(224, 49, 49, 0.24) !important;
+  background:
+    linear-gradient(135deg, rgba(224, 49, 49, 0.06), rgba(255, 255, 255, 0.84)),
+    #ffffff;
+}
+
+.mobileNav {
+  display: none;
+}
+
+.feedbackStack {
+  position: fixed;
+  z-index: 500;
+  left: 18px;
+  bottom: 18px;
+  width: min(360px, calc(100vw - 24px));
+}
+
+.feedbackStack .mantine-Notification-root {
+  border-radius: 8px;
+  box-shadow: 0 18px 48px rgba(31, 45, 61, 0.18);
+}
+
+.feedbackNotification {
+  border-inline-start: 5px solid var(--green) !important;
+}
+
+.feedbackNotification.error {
+  border-inline-start-color: #e03131 !important;
+}
+
+.feedbackNotification.warning {
+  border-inline-start-color: #f59f00 !important;
+}
+
+.feedbackNotification.info {
+  border-inline-start-color: #228be6 !important;
+}
+
+.helpAnswer {
+  line-height: 1.75;
+}
+
+.userButton {
+  max-width: 180px;
+}
+
+.userButtonLabel {
+  max-width: 118px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.termsConsentScroll {
+  border: 1px solid rgba(20, 21, 26, 0.08);
+  border-radius: 8px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.cookieConsent {
+  position: fixed;
+  z-index: 460;
+  inset-inline-start: 18px;
+  inset-block-end: 18px;
+  width: min(560px, calc(100vw - 36px));
+  border-color: rgba(20, 21, 26, 0.1) !important;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 20px 56px rgba(31, 45, 61, 0.16);
+  backdrop-filter: blur(18px);
+}
+
+.cookieConsentText {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 767px) {
+  body {
+    min-width: 0;
+  }
+
+  .topBar {
+    padding-inline: 12px !important;
+  }
+
+  .topBar .mantine-Title-root {
+    font-size: 18px;
+    line-height: 1.15;
+  }
+
+  .topBar .mantine-Text-root {
+    display: none;
+  }
+
+  .brandMark {
+    width: 36px;
+    height: 36px;
+  }
+
+  .brandLogo.header {
+    width: 104px;
+    height: 40px;
+  }
+
+  .topActions {
+    max-width: 210px;
+  }
+
+  .userButton {
+    width: 42px;
+    min-width: 42px;
+    padding-inline: 0;
+  }
+
+  .userButtonLabel {
+    display: none;
+  }
+
+  .hostInput {
+    display: none;
+  }
+
+  .sideNav,
+  .mantine-AppShell-navbar {
+    display: none !important;
+  }
+
+  .mainCanvas {
+    padding: 88px 12px 104px !important;
+  }
+
+  .desktopTabs {
+    display: none !important;
+  }
+
+  .mobileNav {
+    position: fixed;
+    z-index: 300;
+    inset-inline: 10px;
+    bottom: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(54px, 1fr));
+    gap: 4px;
+    padding: 8px;
+    border: 1px solid rgba(20, 21, 26, 0.1);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 18px 48px rgba(31, 45, 61, 0.18);
+    backdrop-filter: blur(18px);
+  }
+
+  .feedbackStack {
+    left: 12px;
+    right: 12px;
+    bottom: 92px;
+    width: auto;
+  }
+
+  .cookieConsent {
+    inset-inline: 10px;
+    inset-block-end: 92px;
+    width: auto;
+  }
+
+  .cookieConsent > .mantine-Group-root {
+    align-items: stretch;
+  }
+
+  .mobileNavItem {
+    min-width: 0;
+    min-height: 58px;
+    display: grid;
+    place-items: center;
+    gap: 3px;
+    padding: 6px 3px;
+    border-radius: 14px;
+    color: var(--muted);
+  }
+
+  .mobileNavItem .mantine-Text-root {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 10px;
+  }
+
+  .mobileNavItem.active {
+    color: var(--green-deep);
+    background: rgba(53, 209, 139, 0.14);
+  }
+
+  .authSurface {
+    align-items: stretch;
+    padding: 12px !important;
+  }
+
+  .authCard {
+    width: 100% !important;
+    padding: 20px !important;
+  }
+
+  .authTitle {
+    font-size: 28px;
+  }
+
+  .eventCard,
+  .activeEventBar,
+  .studioCard,
+  .invitationPreview,
+  .guestInvite {
+    box-shadow: 0 16px 38px rgba(31, 45, 61, 0.1);
+  }
+
+  .statCard {
+    min-height: 66px;
+    padding: 8px 6px;
+  }
+
+  .activeEventBar {
+    padding: 14px !important;
+  }
+
+  .activeEventBar .mantine-Title-root {
+    font-size: 24px;
+    line-height: 1.14;
+  }
+
+  .activeEventStats {
+    width: 100%;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .statCard.compact {
+    min-width: 0;
+    padding: 8px 4px;
+  }
+
+  .statCard .mantine-Text-root {
+    font-size: 11px;
+  }
+
+  .invitationPreview,
+  .guestInvite {
+    padding: 18px !important;
+  }
+
+  .invitationMessage,
+  .guestMessage {
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  .guestSurface {
+    padding: 0 0 22px;
+  }
+
+  .guestInvite .mantine-Title-root {
+    font-size: 28px;
+    line-height: 1.12;
+  }
+
+  .rsvpCard {
+    padding: 14px !important;
+  }
+
+  .qrBox {
+    width: 100%;
+  }
+}
+
+@media (min-width: 768px) {
+  .desktopTabs {
+    display: flex;
+  }
+}
