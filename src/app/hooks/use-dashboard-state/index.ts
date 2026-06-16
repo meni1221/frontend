@@ -125,7 +125,7 @@ export const useDashboardState = () => {
   const createGuest = async (guest: GuestRecord) => {
     if (!session || isDemoSession(session)) {
       setGuests((currentGuests) => [guest, ...currentGuests]);
-      return;
+      return guest;
     }
 
     try {
@@ -140,6 +140,7 @@ export const useDashboardState = () => {
       });
       setGuests((currentGuests) => [createdGuest, ...currentGuests]);
       setEvents((currentEvents) => applyGuestTotals(currentEvents, [createdGuest, ...guests]));
+      return createdGuest;
     } catch (cause) {
       appLogger.warn('dashboard.guest.create_failed', 'Failed creating guest in backend', {
         eventId: guest.eventId,

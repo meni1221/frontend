@@ -21,14 +21,15 @@ import { getReminderPlan, normalizePhone, ReminderAudience } from './helpers';
 
 type GuestsPanelProps = {
   guests: GuestRecord[];
+  isDemoMode?: boolean;
   labels: Record<string, string>;
   selectedEvent: EventCard | undefined;
-  onCreateGuest: (guest: GuestRecord) => Promise<void> | void;
+  onCreateGuest: (guest: GuestRecord) => Promise<GuestRecord> | GuestRecord;
   onDeleteGuest: (guestId: string) => Promise<void> | void;
   onUpdateGuest: (guestId: string, patch: Partial<GuestRecord>) => Promise<void> | void;
 };
 
-export const GuestsPanel = ({ guests, labels, selectedEvent, onCreateGuest, onDeleteGuest, onUpdateGuest }: GuestsPanelProps) => {
+export const GuestsPanel = ({ guests, isDemoMode = false, labels, selectedEvent, onCreateGuest, onDeleteGuest, onUpdateGuest }: GuestsPanelProps) => {
   useComponentLogger('GuestsPanel', { guests: guests.length, selectedEventId: selectedEvent?.id });
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<string>('all');
@@ -165,7 +166,7 @@ export const GuestsPanel = ({ guests, labels, selectedEvent, onCreateGuest, onDe
 
     setCreateLoading(true);
     try {
-      await onCreateGuest({
+      const createdGuest = await onCreateGuest({
         id: `guest_${Date.now()}`,
         eventId: selectedEvent.id,
         inviteId: `inv_${Date.now().toString(36)}`,
@@ -187,8 +188,47 @@ export const GuestsPanel = ({ guests, labels, selectedEvent, onCreateGuest, onDe
         title: labels.addGuest,
         message: fullName.trim(),
       });
+
       resetForm();
       setIsCreateOpen(false);
+
+      if (!isDemoMode) {
+        try {
+          const result = await sendWhatsappBatch(
+            [{
+              fullName: createdGuest.fullName,
+              phoneNumber: createdGuest.phoneNumber,
+              inviteLink: buildGuestInviteLink(createdGuest),
+            }],
+            `${labels.defaultWhatsappMessage}\n\n{inviteLink}`,
+          );
+
+          appLogger.info('guests.invitation_queued', 'Guest invitation message queued', {
+            eventId: selectedEvent.id,
+            guestId: createdGuest.id,
+            missingWhatsapp: result.missingWhatsapp.length,
+            queued: result.queued,
+          });
+          showFeedback({
+            type: result.missingWhatsapp.length ? 'warning' : 'success',
+            title: labels.messagesQueued,
+            message: result.missingWhatsapp.length
+              ? labels.missingWhatsappMessage.replace('{count}', String(result.missingWhatsapp.length))
+              : `${result.queued} ${labels.messagesQueuedMessage}`,
+          });
+        } catch (cause) {
+          appLogger.warn('guests.invitation_queue_failed', 'Guest invitation message queue failed', {
+            eventId: selectedEvent.id,
+            guestId: createdGuest.id,
+            message: getFriendlyErrorMessage(cause, labels),
+          });
+          showFeedback({
+            type: 'error',
+            title: labels.actionFailed,
+            message: getFriendlyErrorMessage(cause, labels),
+          });
+        }
+      }
     } catch (cause) {
       showFeedback({
         type: 'error',
@@ -397,10 +437,10 @@ export const GuestsPanel = ({ guests, labels, selectedEvent, onCreateGuest, onDe
           <Text size="sm" c="dimmed">{selectedEvent?.eventName}</Text>
         </Stack>
         <Group>
-          <Button variant="light" leftSection={<IconSend size={uiConfig.icons.button} />} onClick={() => setIsReminderOpen(true)}>
+          <Button variant="light" leftSection={<IconSend size={uiConfig.icons.button} />} disabled={!selectedEvent} onClick={() => setIsReminderOpen(true)}>
             {labels.sendReminder}
           </Button>
-          <Button leftSection={<IconPlus size={uiConfig.icons.button} />} onClick={() => setIsCreateOpen(true)}>{labels.addGuest}</Button>
+          <Button leftSection={<IconPlus size={uiConfig.icons.button} />} disabled={!selectedEvent} onClick={() => setIsCreateOpen(true)}>{labels.addGuest}</Button>
         </Group>
       </Group>
 

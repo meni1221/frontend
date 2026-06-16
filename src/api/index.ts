@@ -269,9 +269,13 @@ export const createGuest = async (
   eventId: string,
   payload: Pick<GuestRecord, 'fullName' | 'phoneNumber' | 'email' | 'language' | 'maxAllowed' | 'menCount' | 'womenCount'>,
 ): Promise<GuestRecord> => {
+  const requestPayload = {
+    ...payload,
+    ...(payload.email?.trim() ? { email: payload.email.trim() } : { email: undefined }),
+  };
   const guest = await request<BackendGuest>(`/guests/event/${eventId}`, {
     method: 'POST',
-    body: JSON.stringify(payload),
+    body: JSON.stringify(requestPayload),
   });
 
   return mapGuest(guest, eventId);
@@ -286,9 +290,13 @@ export const updateGuest = async (
   guestId: string,
   payload: Partial<Pick<GuestRecord, 'fullName' | 'phoneNumber' | 'email' | 'language' | 'status' | 'maxAllowed' | 'menCount' | 'womenCount' | 'adults' | 'children' | 'notes'>>,
 ): Promise<GuestRecord> => {
+  const requestPayload = {
+    ...payload,
+    ...('email' in payload && !payload.email?.trim() ? { email: undefined } : {}),
+  };
   const guest = await request<BackendGuest>(`/guests/${guestId}`, {
     method: 'PATCH',
-    body: JSON.stringify(payload),
+    body: JSON.stringify(requestPayload),
   });
 
   return mapGuest(guest, normalizeMongoId(guest.eventId));

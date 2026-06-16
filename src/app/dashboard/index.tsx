@@ -74,6 +74,7 @@ const DashboardContent = ({
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isProfileRequired, setIsProfileRequired] = useState(false);
   const [isTourOpen, setIsTourOpen] = useState(false);
+  const [isAutomaticOnboardingDismissed, setIsAutomaticOnboardingDismissed] = useState(false);
   const [isOnboardingSaving, setIsOnboardingSaving] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(isDemoSession(state.session));
   const { showFeedback } = useFeedback();
@@ -86,7 +87,8 @@ const DashboardContent = ({
     termsAccepted &&
     state.session.profileCompleted &&
     !state.session.onboardingCompleted &&
-    !state.session.onboardingSkipped,
+    !state.session.onboardingSkipped &&
+    !isAutomaticOnboardingDismissed,
   );
   const isAutomaticOnboardingOpen = shouldShowOnboarding && !isTourOpen;
   const isOnboardingOpen = isAutomaticOnboardingOpen || isTourOpen;
@@ -94,6 +96,8 @@ const DashboardContent = ({
 
   useEffect(() => {
     setTermsAccepted(isDemoSession(state.session));
+    setIsTourOpen(false);
+    setIsAutomaticOnboardingDismissed(false);
   }, [state.session?.hostId]);
 
   useEffect(() => {
@@ -132,17 +136,19 @@ const DashboardContent = ({
   };
 
   const completeOnboarding = async () => {
+    setIsTourOpen(false);
+    setIsAutomaticOnboardingDismissed(true);
     setIsOnboardingSaving(true);
 
     try {
       await state.updateOnboarding({ completed: true });
-      setIsTourOpen(false);
       showFeedback({
         type: 'success',
         title: labels.onboardingCompletedTitle,
         message: labels.onboardingCompletedMessage,
       });
     } catch (cause) {
+      setIsAutomaticOnboardingDismissed(false);
       showFeedback({
         type: 'error',
         title: labels.actionFailed,
@@ -159,17 +165,18 @@ const DashboardContent = ({
       return;
     }
 
+    setIsAutomaticOnboardingDismissed(true);
     setIsOnboardingSaving(true);
 
     try {
       await state.updateOnboarding({ skipped: true });
-      setIsTourOpen(false);
       showFeedback({
         type: 'info',
         title: labels.onboardingSkippedTitle,
         message: labels.onboardingSkippedMessage,
       });
     } catch (cause) {
+      setIsAutomaticOnboardingDismissed(false);
       showFeedback({
         type: 'error',
         title: labels.actionFailed,
@@ -240,6 +247,7 @@ const DashboardContent = ({
         <GuestsPanel
           labels={labels}
           guests={state.guests}
+          isDemoMode={isDemo}
           selectedEvent={state.selectedEvent}
           onCreateGuest={state.createGuest}
           onDeleteGuest={state.deleteGuest}
