@@ -6,9 +6,16 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          icons: ['@tabler/icons-react'],
-          mantine: ['@mantine/core', '@mantine/hooks'],
+        manualChunks(id) {
+          if (id.includes('node_modules/@tabler/icons-react')) {
+            return 'icons';
+          }
+
+          if (id.includes('node_modules/@mantine/core') || id.includes('node_modules/@mantine/hooks')) {
+            return 'mantine';
+          }
+
+          return undefined;
         },
       },
     },
