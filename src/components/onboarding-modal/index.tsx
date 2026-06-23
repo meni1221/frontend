@@ -32,7 +32,7 @@ const onboardingSteps: OnboardingStep[] = [
   {
     icon: <IconUsers size={uiConfig.icons.nav} />,
     labelKey: 'onboardingGuestsTitle',
-    tab: 'guests',
+    tab: 'audience',
     textKey: 'onboardingGuestsText',
   },
   {
@@ -44,7 +44,7 @@ const onboardingSteps: OnboardingStep[] = [
   {
     icon: <IconSend size={uiConfig.icons.nav} />,
     labelKey: 'onboardingWhatsappTitle',
-    tab: 'whatsapp',
+    tab: 'audience',
     textKey: 'onboardingWhatsappText',
   },
   {

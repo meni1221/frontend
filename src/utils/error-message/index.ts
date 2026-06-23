@@ -35,6 +35,10 @@ export const getFriendlyErrorMessage = (cause: unknown, labels: Record<string, s
     return `${labels.googleNotConfigured} ${labels.googleNotConfiguredHint}`;
   }
 
+  if (normalizedMessage.includes('whatsapp connection') && (normalizedMessage.includes('not connected') || normalizedMessage.includes('no saved session'))) {
+    return `${labels.whatsappReconnectRequired} ${labels.whatsappReconnectRequiredHint}`;
+  }
+
   if (normalizedMessage.includes('failed to fetch') || normalizedMessage.includes('networkerror')) {
     return `${labels.networkError} ${labels.networkErrorHint}`;
   }

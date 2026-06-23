@@ -62,8 +62,8 @@ export const ActiveEventBar = ({ event, labels, onNavigate }: ActiveEventBarProp
         <Button variant="light" leftSection={<IconSettings size={uiConfig.icons.button} />} onClick={() => onNavigate('settings')}>
           {labels.setupEvent}
         </Button>
-        <Button variant="light" leftSection={<IconBrandWhatsapp size={uiConfig.icons.button} />} onClick={() => onNavigate('whatsapp')}>
-          {labels.openWhatsapp}
+        <Button variant="light" leftSection={<IconBrandWhatsapp size={uiConfig.icons.button} />} onClick={() => onNavigate('audience')}>
+          {labels.openGuestCommunication}
         </Button>
       </SimpleGrid>
     </Card>

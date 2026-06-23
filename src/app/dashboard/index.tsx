@@ -1,4 +1,4 @@
-import { Tabs } from '@mantine/core';
+import { Stack, Tabs } from '@mantine/core';
 import { Suspense, lazy, useCallback, useEffect, useState } from 'react';
 import { ActiveEventBar } from '../../components/active-event-bar';
 import { AdminLayout } from '../../components/admin-layout';
@@ -13,6 +13,7 @@ import { Locale } from '../../i18n';
 import { GuestPanel } from '../../pages/guest';
 import { useComponentLogger } from '../../utils/component-logger';
 import { getFriendlyErrorMessage } from '../../utils/error-message';
+import { useWhatsappStatus } from '../../hooks/use-whatsapp-status';
 import { useDashboardState } from '../hooks/use-dashboard-state';
 
 const isDemoSession = (session: ReturnType<typeof useDashboardState>['session']) => session?.accessToken === 'demo-token';
@@ -81,6 +82,7 @@ const DashboardContent = ({
   const userDisplayName = state.session?.fullName?.trim() ? state.session.fullName.trim() : state.session?.email || labels.guest;
   const acceptTerms = useCallback(() => setTermsAccepted(true), []);
   const isDemo = isDemoSession(state.session);
+  const whatsappStatus = useWhatsappStatus({ enabled: Boolean(state.session && !isDemo) });
   const shouldShowOnboarding = Boolean(
     state.session &&
     state.session.role === 'HOST' &&
@@ -92,7 +94,7 @@ const DashboardContent = ({
   );
   const isAutomaticOnboardingOpen = shouldShowOnboarding && !isTourOpen;
   const isOnboardingOpen = isAutomaticOnboardingOpen || isTourOpen;
-  const ownerTabs: AppTab[] = ['system_overview', 'owner', 'logs', 'terms', 'settings'];
+  const ownerTabs: AppTab[] = ['system_overview', 'owner', 'logs', 'terms', 'settings', 'whatsapp'];
 
   useEffect(() => {
     setTermsAccepted(isDemoSession(state.session));
@@ -103,6 +105,12 @@ const DashboardContent = ({
   useEffect(() => {
     if (state.session?.role === 'OWNER' && !ownerTabs.includes(activeTab)) {
       onTabChange('system_overview');
+    }
+  }, [activeTab, onTabChange, state.session?.role]);
+
+  useEffect(() => {
+    if (state.session?.role !== 'OWNER' && (activeTab === 'guests' || activeTab === 'whatsapp')) {
+      onTabChange('audience');
     }
   }, [activeTab, onTabChange, state.session?.role]);
 
@@ -199,6 +207,7 @@ const DashboardContent = ({
     onTabChange={onTabChange}
     role={state.session?.role ?? 'HOST'}
     userDisplayName={userDisplayName}
+    whatsappStatus={whatsappStatus.status}
   >
     {state.session && !isDemo && <TermsConsent hostId={state.session.hostId} labels={labels} onAccepted={acceptTerms} />}
     {state.session && (
@@ -241,6 +250,27 @@ const DashboardContent = ({
           onQueryChange={state.setQuery}
           onSelectEvent={state.setSelectedEventId}
         />
+      </Tabs.Panel>
+
+      <Tabs.Panel value="audience">
+        <Stack gap="xl">
+          <GuestsPanel
+            labels={labels}
+            guests={state.guests}
+            isDemoMode={isDemo}
+            selectedEvent={state.selectedEvent}
+            onCreateGuest={state.createGuest}
+            onDeleteGuest={state.deleteGuest}
+            onUpdateGuest={state.updateGuest}
+          />
+          <WhatsappPanel
+            guests={state.guests}
+            labels={labels}
+            selectedEvent={state.selectedEvent}
+            isDemoMode={isDemo}
+            statusSnapshot={whatsappStatus.snapshot}
+          />
+        </Stack>
       </Tabs.Panel>
 
       <Tabs.Panel value="guests">
@@ -298,7 +328,13 @@ const DashboardContent = ({
       </Tabs.Panel>
 
       <Tabs.Panel value="whatsapp">
-        <WhatsappPanel guests={state.guests} labels={labels} selectedEvent={state.selectedEvent} isDemoMode={isDemo} />
+        <WhatsappPanel
+          guests={state.guests}
+          labels={labels}
+          selectedEvent={state.selectedEvent}
+          isDemoMode={isDemo}
+          statusSnapshot={whatsappStatus.snapshot}
+        />
       </Tabs.Panel>
 
       <Tabs.Panel value="system_overview">

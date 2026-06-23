@@ -22,6 +22,7 @@ const AppContext = createContext<AppContextValue | null>(null);
 
 const appTabs: AppTab[] = [
   'events',
+  'audience',
   'guests',
   'seating',
   'invitations',
@@ -44,6 +45,10 @@ const getTabFromPath = (): AppTab => {
 
   if (section === 'dashboard' && isAppTab(tab)) {
     return tab;
+  }
+
+  if (isAppTab(section)) {
+    return section;
   }
 
   return defaultTab;

@@ -451,6 +451,20 @@ body {
   max-width: 180px;
 }
 
+.whatsappStatusBadge {
+  height: 36px;
+  max-width: 124px;
+  padding-inline: 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.whatsappStatusBadge .mantine-Badge-section {
+  margin-inline-end: 6px;
+}
+
 .userButtonLabel {
   max-width: 118px;
   overflow: hidden;
@@ -512,6 +526,22 @@ body {
 
   .topActions {
     max-width: 210px;
+  }
+
+  .whatsappStatusBadge {
+    width: 42px;
+    min-width: 42px;
+    max-width: 42px;
+    height: 42px;
+    padding: 0;
+  }
+
+  .whatsappStatusBadge .mantine-Badge-label {
+    display: none;
+  }
+
+  .whatsappStatusBadge .mantine-Badge-section {
+    margin: 0;
   }
 
   .userButton {

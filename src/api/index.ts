@@ -4,6 +4,8 @@ import { appLogger } from '../utils/logger';
 export type WhatsappStatus = 'DISCONNECTED' | 'QR_READY' | 'CONNECTED';
 
 export type WhatsappSnapshot = {
+  connectionId: string;
+  displayName: string;
   hostId: string;
   status: WhatsappStatus;
   qrCode: string | null;
@@ -54,8 +56,50 @@ export type OwnerEvent = {
 export type WhatsappRecipient = {
   email?: string;
   fullName?: string;
+  guestId?: string;
   inviteLink?: string;
   phoneNumber: string;
+};
+
+export type WhatsappQueueItemStatus = 'QUEUED' | 'SENDING' | 'SENT' | 'FAILED' | 'SKIPPED';
+export type WhatsappQueueStatus = 'IDLE' | 'RUNNING' | 'PAUSED' | 'STOPPING' | 'DONE' | 'FAILED' | 'CANCELLED';
+
+export type WhatsappQueueItem = {
+  id: string;
+  fullName?: string;
+  guestId?: string;
+  inviteLink?: string;
+  phoneNumber: string;
+  reason?: string;
+  status: WhatsappQueueItemStatus;
+};
+
+export type WhatsappQueueSnapshot = {
+  batchId: string | null;
+  completedAt?: string;
+  createdAt?: string;
+  eventId?: string;
+  items: WhatsappQueueItem[];
+  nextRecipient?: string;
+  progress: {
+    failed: number;
+    queued: number;
+    sent: number;
+    skipped: number;
+    total: number;
+  };
+  status: WhatsappQueueStatus;
+};
+
+export type WhatsappBatchHistoryEntry = {
+  batchId: string;
+  createdAt: string;
+  eventId?: string;
+  failed: number;
+  messagePreview: string;
+  sent: number;
+  skipped: number;
+  total: number;
 };
 
 export type GoogleContact = WhatsappRecipient;
@@ -141,15 +185,25 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000
 const SESSION_STORAGE_KEY = 'ishru-session';
 export const SESSION_EXPIRED_EVENT = 'ishru-session-expired';
 
+export const getApiOrigin = () => {
+  try {
+    return new URL(API_BASE_URL).origin;
+  } catch {
+    return 'http://localhost:3000';
+  }
+};
+
 let activeSession: AuthSession | null = null;
 
 export const setApiSession = (session: AuthSession | null) => {
   activeSession = session;
   if (session) {
-    window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+    window.sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+    window.localStorage.removeItem(SESSION_STORAGE_KEY);
     return;
   }
 
+  window.sessionStorage.removeItem(SESSION_STORAGE_KEY);
   window.localStorage.removeItem(SESSION_STORAGE_KEY);
 };
 
@@ -168,15 +222,18 @@ const createRequestId = () => {
 
 export const getStoredSession = (): AuthSession | null => {
   try {
-    const rawSession = window.localStorage.getItem(SESSION_STORAGE_KEY);
+    const rawSession = window.sessionStorage.getItem(SESSION_STORAGE_KEY) ?? window.localStorage.getItem(SESSION_STORAGE_KEY);
     if (!rawSession) {
       return null;
     }
 
     const session = JSON.parse(rawSession) as AuthSession;
     activeSession = session;
+    window.sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+    window.localStorage.removeItem(SESSION_STORAGE_KEY);
     return session;
   } catch {
+    window.sessionStorage.removeItem(SESSION_STORAGE_KEY);
     window.localStorage.removeItem(SESSION_STORAGE_KEY);
     return null;
   }
@@ -207,7 +264,9 @@ export const changeCurrentPassword = async (currentPassword: string, newPassword
   });
 
 export const connectWhatsapp = async (): Promise<WhatsappSnapshot> =>
-  request('/whatsapp/connect', { method: 'POST' });
+  request('/whatsapp/connect', {
+    method: 'POST',
+  });
 
 export const getWhatsappQr = async (): Promise<WhatsappSnapshot> =>
   request('/whatsapp/qr');
@@ -216,7 +275,9 @@ export const getWhatsappStatus = async (): Promise<WhatsappSnapshot> =>
   request('/whatsapp/status');
 
 export const disconnectWhatsapp = async (): Promise<{ status: WhatsappStatus }> =>
-  request('/whatsapp/disconnect', { method: 'POST' });
+  request('/whatsapp/disconnect', {
+    method: 'POST',
+  });
 
 export const getEvents = async (): Promise<EventCard[]> => {
   const events = await request<BackendEvent[]>('/events');
@@ -310,16 +371,49 @@ export type WhatsappBatchResult = {
 export const sendWhatsappBatch = async (
   recipients: WhatsappRecipient[],
   message: string,
+  options?: { allowResend?: boolean; eventId?: string },
 ): Promise<WhatsappBatchResult> =>
   request('/whatsapp/send-batch', {
     method: 'POST',
     body: JSON.stringify({
+      allowResend: options?.allowResend,
+      eventId: options?.eventId,
       recipients,
       message,
-      minDelayMs: 9000,
-      maxDelayMs: 18000,
+      minDelayMs: 2500,
+      maxDelayMs: 5000,
     }),
   });
+
+export const sendWhatsappTest = async (phoneNumber: string, message: string): Promise<{ queued: number }> =>
+  request('/whatsapp/send-test', {
+    method: 'POST',
+    body: JSON.stringify({ phoneNumber, message }),
+  });
+
+export const getWhatsappQueueState = async (): Promise<WhatsappQueueSnapshot> =>
+  request('/whatsapp/send-state');
+
+export const getWhatsappSendHistory = async (eventId?: string): Promise<WhatsappBatchHistoryEntry[]> => {
+  const params = new URLSearchParams();
+  if (eventId) {
+    params.set('eventId', eventId);
+  }
+
+  return request(`/whatsapp/send-history${params.toString() ? `?${params.toString()}` : ''}`);
+};
+
+export const stopWhatsappBatch = async (): Promise<WhatsappQueueSnapshot> =>
+  request('/whatsapp/send-stop', { method: 'POST' });
+
+export const pauseWhatsappBatch = async (): Promise<WhatsappQueueSnapshot> =>
+  request('/whatsapp/send-pause', { method: 'POST' });
+
+export const resumeWhatsappBatch = async (): Promise<WhatsappQueueSnapshot> =>
+  request('/whatsapp/send-resume', { method: 'POST' });
+
+export const retryFailedWhatsappBatch = async (): Promise<WhatsappBatchResult> =>
+  request('/whatsapp/send-retry-failed', { method: 'POST' });
 
 export const sendInvitationEmailBatch = async (
   recipients: Array<Pick<WhatsappRecipient, 'email' | 'fullName' | 'inviteLink'>>,

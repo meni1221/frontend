@@ -2,7 +2,7 @@ export type EventTheme = 'brit' | 'wedding' | 'bar_mitzvah' | 'birthday' | 'corp
 export type EventSeatingMode = 'mixed' | 'separate';
 export type TemplateKey = 'classic' | 'warm' | 'elegant' | 'casual';
 export type InvitationDesignKey = 'soft' | 'royal' | 'garden' | 'minimal';
-export type AppTab = 'events' | 'guests' | 'seating' | 'invitations' | 'guest' | 'whatsapp' | 'system_overview' | 'owner' | 'logs' | 'terms' | 'settings';
+export type AppTab = 'events' | 'audience' | 'guests' | 'seating' | 'invitations' | 'guest' | 'whatsapp' | 'system_overview' | 'owner' | 'logs' | 'terms' | 'settings';
 export type GuestLanguage = 'he' | 'en' | 'es';
 export type GuestStatus = 'pending' | 'confirmed' | 'maybe' | 'declined' | 'reminded' | 'thanked';
 
