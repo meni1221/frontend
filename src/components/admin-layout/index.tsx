@@ -1,6 +1,7 @@
-import { ActionIcon, AppShell, Box, Button, Group, Tabs, Text, Title, UnstyledButton } from '@mantine/core';
+import { ActionIcon, AppShell, Badge, Box, Button, Group, Tabs, Text, Title, UnstyledButton } from '@mantine/core';
 import { ReactNode, useState } from 'react';
 import { IconArmchair, IconBrandWhatsapp, IconCalendar, IconChartPie, IconEdit, IconEye, IconFileText, IconHelpCircle, IconListDetails, IconLogout, IconSettings, IconShield, IconUser, IconUsers, IconWorld } from '@tabler/icons-react';
+import { WhatsappStatus } from '../../api';
 import { uiConfig } from '../../config';
 import { AppTab } from '../../data';
 import { useComponentLogger } from '../../utils/component-logger';
@@ -22,15 +23,16 @@ type AdminLayoutProps = {
   onTabChange: (tab: AppTab) => void;
   role: SessionRole;
   userDisplayName: string;
+  whatsappStatus?: WhatsappStatus;
 };
 
 const navItems: Array<{ value: AppTab; icon: ReactNode; labelKey: string; ownerOnly?: boolean; hiddenForOwner?: boolean }> = [
   { value: 'events', icon: <IconCalendar size={uiConfig.icons.nav} />, labelKey: 'events', hiddenForOwner: true },
-  { value: 'guests', icon: <IconUsers size={uiConfig.icons.nav} />, labelKey: 'guests', hiddenForOwner: true },
+  { value: 'audience', icon: <IconUsers size={uiConfig.icons.nav} />, labelKey: 'guestsCommunication', hiddenForOwner: true },
   { value: 'seating', icon: <IconArmchair size={uiConfig.icons.nav} />, labelKey: 'seating', hiddenForOwner: true },
   { value: 'invitations', icon: <IconEdit size={uiConfig.icons.nav} />, labelKey: 'invitations', hiddenForOwner: true },
   { value: 'guest', icon: <IconEye size={uiConfig.icons.nav} />, labelKey: 'guestView', hiddenForOwner: true },
-  { value: 'whatsapp', icon: <IconBrandWhatsapp size={uiConfig.icons.nav} />, labelKey: 'whatsapp', hiddenForOwner: true },
+  { value: 'whatsapp', icon: <IconBrandWhatsapp size={uiConfig.icons.nav} />, labelKey: 'whatsapp', ownerOnly: true },
   { value: 'system_overview', icon: <IconChartPie size={uiConfig.icons.nav} />, labelKey: 'systemOverview', ownerOnly: true },
   { value: 'owner', icon: <IconShield size={uiConfig.icons.nav} />, labelKey: 'ownerDashboard', ownerOnly: true },
   { value: 'logs', icon: <IconListDetails size={uiConfig.icons.nav} />, labelKey: 'systemLogs', ownerOnly: true },
@@ -38,8 +40,8 @@ const navItems: Array<{ value: AppTab; icon: ReactNode; labelKey: string; ownerO
   { value: 'settings', icon: <IconSettings size={uiConfig.icons.nav} />, labelKey: 'settings' },
 ];
 
-const mobileMainTabs: AppTab[] = ['events', 'guests', 'invitations', 'seating', 'whatsapp', 'settings'];
-const ownerMobileMainTabs: AppTab[] = ['system_overview', 'owner', 'logs', 'terms', 'settings'];
+const mobileMainTabs: AppTab[] = ['events', 'audience', 'invitations', 'seating', 'settings'];
+const ownerMobileMainTabs: AppTab[] = ['system_overview', 'owner', 'whatsapp', 'logs', 'settings'];
 
 export const AdminLayout = ({
   activeTab,
@@ -53,6 +55,7 @@ export const AdminLayout = ({
   onTabChange,
   role,
   userDisplayName,
+  whatsappStatus = 'DISCONNECTED',
 }: AdminLayoutProps) => {
   useComponentLogger('AdminLayout', { activeTab, role });
   const [isHelpOpen, setIsHelpOpen] = useState(false);
@@ -70,6 +73,8 @@ export const AdminLayout = ({
   });
   const mobileTabs = role === 'OWNER' ? ownerMobileMainTabs : mobileMainTabs;
   const mobileNavItems = visibleNavItems.filter((item) => mobileTabs.includes(item.value));
+  const isWhatsappConnected = whatsappStatus === 'CONNECTED';
+  const whatsappStatusLabel = isWhatsappConnected ? labels.connected : labels.disconnected;
 
   const confirmLogout = () => {
     setIsLogoutModalOpen(false);
@@ -95,6 +100,15 @@ export const AdminLayout = ({
           </Group>
 
           <Group className="topActions" gap="xs" wrap="nowrap">
+            <Badge
+              className="whatsappStatusBadge"
+              color={isWhatsappConnected ? 'green' : 'red'}
+              leftSection={<IconBrandWhatsapp size={uiConfig.icons.button} />}
+              title={`${labels.whatsapp}: ${whatsappStatusLabel}`}
+              variant="light"
+            >
+              {whatsappStatusLabel}
+            </Badge>
             <ActionIcon variant="light" size="lg" onClick={onLocaleToggle} aria-label="Language">
               <IconWorld size={uiConfig.icons.nav} />
             </ActionIcon>
@@ -124,7 +138,11 @@ export const AdminLayout = ({
         <Tabs value={activeTab} onChange={(value) => value && onTabChange(value as AppTab)} orientation="vertical" variant="pills">
           <Tabs.List>
             {visibleNavItems.map((item) => (
-              <Tabs.Tab key={item.value} value={item.value} leftSection={item.icon}>
+              <Tabs.Tab
+                key={item.value}
+                value={item.value}
+                leftSection={item.icon}
+              >
                 {labels[item.labelKey]}
               </Tabs.Tab>
             ))}
